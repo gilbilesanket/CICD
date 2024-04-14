@@ -45,6 +45,7 @@ def lambda_handler(event, context):
     #sns_client.publish(TopicArn='arn:aws:sns:us-east-1:950907486899:fromlambdatosns:0ef87e37-83ca-4307-8803-dee82119e224',
     #Message=message,Subject="Notification")
 
+    print("message sent to the subscriber")
     print(message)    
     
     return {
