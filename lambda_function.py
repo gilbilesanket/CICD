@@ -31,7 +31,7 @@ def lambda_handler(event, context):
     print(df[df['status']=="delivered"])
     
     message="Data filtered with status as delivered and sent to S3"
-    
+    print("publising message to sns_client")
     try:
     # Publish message to SNS topic
         sns_client.publish(
