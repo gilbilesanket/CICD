@@ -21,8 +21,9 @@ def lambda_handler(event, context):
         message=generate_data()
         print(json.dumps(message))
               
-        sqs_client.send_message(QueueUrl ='https://sqs.us-east-1.amazonaws.com/950907486899/messgQ',MessageBody=json.dumps(message))    
-    # TODO implement
+        sqs_client.send_message(QueueUrl ='https://sqs.us-east-1.amazonaws.com/950907486899/messgQ',MessageBody=json.dumps(message))
+        print("Data sent to SQS")    
+            # TODO implement
     return {
         'statusCode': 200,
         'body': json.dumps('Hello from Lambda!')
