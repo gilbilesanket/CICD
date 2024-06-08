@@ -22,7 +22,7 @@ def lambda_handler(event, context):
         print(json.dumps(message))
               
         sqs_client.send_message(QueueUrl ='https://sqs.us-east-1.amazonaws.com/950907486899/messgQ',MessageBody=json.dumps(message))
-        print("Data sent to SQS")    
+        print("Data has been sent to SQS")    
             # TODO implement
     return {
         'statusCode': 200,
