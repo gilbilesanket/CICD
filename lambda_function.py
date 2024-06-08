@@ -1,58 +1,30 @@
 import json
+import random
+import string
 import boto3
-import pandas as pd
 
-s3_client = boto3.client('s3')
-sns_client = boto3.client('sns')
-#sns_arn = 'arn:aws:sns:us-east-1:851725469799:s3-arrival-notification'
+def generate_data():
+   return{
+    "bookingId": str(random.randint(1000,9999)),
+    "userId": str(random.randint(1000,9999)),
+    "propertyId": str(random.randint(1000,9999)),
+    "location": random.choice(["California","Newyork","Washington","Berlin"]),
+    "startDate":random.choice(["2024-03-12","2024-03-13","2024-03-14"]),
+    "endDate":random.choice(["2024-03-13","2024-03-14","2024-03-15"]),
+    "price":'$ ' + str(random.randint(100,999))
+    }   
 
 def lambda_handler(event, context):
-    result=[]
-    bucket_name = event['Records'][0]['s3']['bucket']['name']
-    file_key = event['Records'][0]['s3']['object']['key']
-    # Read the JSON file from S3
-    response = s3_client.get_object(Bucket=bucket_name, Key=file_key)
-    #raw_data=response['Body'].read()
-    #print(raw_data)
-    json_data = response['Body'].read().decode('utf-8')
-    
-    # Convert JSON data to pandas DataFrame
-    #df = pd.DataFrame(json_data)
-    jsonobj=json_data.split('\r\n')
-    # Process the DataFrame as needed
-    for obj in jsonobj:
-        if not obj.strip():
-            continue
-        else:
-            jsondict=json.loads(obj)
-            result.append(jsondict) 
-    
-    df=pd.DataFrame(result)
-    print(df[df['status']=="delivered"])
-    
-    message="Data filtered with status as delivered and sent to S3"
-    print("publising message to sns_client")
-    try:
-    # Publish message to SNS topic
-        sns_client.publish(
-        TopicArn='arn:aws:sns:us-east-1:950907486899:fromlambdatosns',
-        Message=message,
-        Subject="Notification"
-        )
-    except Exception as e:
-        print(f"Error publishing message to SNS topic: {e}")
-
-    #sns_client.publish(TopicArn='arn:aws:sns:us-east-1:950907486899:fromlambdatosns:0ef87e37-83ca-4307-8803-dee82119e224',
-    #Message=message,Subject="Notification")
-
-    print("done !!! message sent to the subscriber")
-    print(message)    
-    
+    sqs_client=boto3.client('sqs')
+    print("-------------Sending Data to SQS------------------")  
+    for i in range(10):
+        message=generate_data()
+        print(json.dumps(message))
+              
+        sqs_client.send_message(QueueUrl ='https://sqs.us-east-1.amazonaws.com/950907486899/messgQ',MessageBody=json.dumps(message))    
+    # TODO implement
     return {
         'statusCode': 200,
-        'body': json.dumps('JSON file read successfully')
+        'body': json.dumps('Hello from Lambda!')
+        
     }
-
-
-
-

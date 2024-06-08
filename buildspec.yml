@@ -12,11 +12,11 @@ phases:
       - cd lib
       - zip -r9 ../deployment_package.zip .
       - cd ..
-      - zip -g deployment_package.zip lambda_function.py
+      - zip -g deployment_package.zip generate_data.py
   post_build:
     commands:
       - echo "Uploading to S3..."
       - aws s3 cp deployment_package.zip s3://codechangedetect/
       - echo "Updating Lambda function via S3..."
-      - aws lambda update-function-code --function-name lambdatosns --s3-bucket codechangedetect --s3-key deployment_package.zip
+      - aws lambda update-function-code --function-name generate_data --s3-bucket codechangedetect --s3-key deployment_package.zip
       - echo "Deployment complete!"
